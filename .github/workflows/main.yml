@@ -23,21 +23,31 @@ jobs:
             node-version: ${{ matrix.node-version }}
             cache: 'npm'
         
-        - name: Start MongoDB
+        - name: Install dependencies
+          run: npm install        
+        
+        - name: Start MongoDB for linting and unit tests
+          uses: supercharge/mongodb-github-action@1.11.0
+          with:
+            mongodb-version: ${{ matrix.mongodb-version }}
+        
+        - name: Run linting and unit tests
+          run: npm run lint && npm run test:unit
+          env:
+            CI: true
+
+        - name: Start MongoDB for integration tests
           uses: supercharge/mongodb-github-action@1.11.0
           with:
             mongodb-version: ${{ matrix.mongodb-version }}
             mongodb-port: 3030
         
-        - name: Install dependencies
-          run: npm install        
-        
-        - name: Run tests
-          run: npm test
-          env:
-            CI: true
-
         - name: Cypress run
           uses: cypress-io/github-action@v6
+
+        - name: Run integration tests
+          run: npm run test:integration
+          env:
+            CI: true
         
         
