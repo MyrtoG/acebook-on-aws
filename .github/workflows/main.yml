@@ -42,6 +42,7 @@ jobs:
             CI: true
 
     deploy:
+      needs: test
       runs-on: ubuntu-latest
 
       steps:
@@ -55,7 +56,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id        : ${{ secrets.ACEBOOK_AWS_ACCESS_KEY }}
-          aws-secret-access-key-id : ${{ secrets.ACEBOOK_AWS_SECRET_KEY }}
+          aws-secret-access-key    : ${{ secrets.ACEBOOK_AWS_SECRET_KEY }}
           aws-region               : "eu-west-2"
 
       - name: Test aws cli installation
