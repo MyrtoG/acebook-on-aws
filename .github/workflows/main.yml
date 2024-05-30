@@ -1,5 +1,5 @@
 # The name of the workflow
-name: Test
+name: Test and then Deploy to AWS
 
 # This workflow will run on any push to the repository
 on: push
@@ -40,3 +40,27 @@ jobs:
           run: npm test
           env:
             CI: true
+
+    deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Cloning repo to Ubuntu VM
+        uses: actions/checkout@v4.1.5
+
+      - name: Create ZIP deployment package
+        run: zip -r acebook-wind-files.zip ./ -x '*.git*'
+
+      - name: Configure my AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id        : ${{ secrets.ACEBOOK_AWS_ACCESS_KEY }}
+          aws-secret-access-key-id : ${{ secrets.ACEBOOK_AWS_SECRET_KEY }}
+          aws-region               : "eu-west-2"
+
+      - name: Test aws cli installation
+        run : aws --version
+
+      - name: Copy Deployment package to S3 bucket
+        run : aws s3 cp acebook-wind-files.zip s3://acebook-wind-s3/
+
